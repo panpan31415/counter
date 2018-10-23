@@ -1,11 +1,17 @@
 import React from "react";
 import "./App.css";
-import store from "./store/";
-import * as actions from "./actions/";
+import { setActiveSession, updateTime } from "./actions/";
+import { connect } from "react-redux";
 
-const App = () => {
-  const { days, hours, minutes, seconds, activeSession } = store.getState();
-
+const App = ({
+  days,
+  hours,
+  minutes,
+  seconds,
+  activeSession,
+  setActiveSession,
+  updateTime
+}) => {
   return (
     <div className="App">
       <header>
@@ -21,7 +27,9 @@ const App = () => {
             <span className="Counter__text--grey">ACTIVE SESSION: </span>
             <select
               className="Counter__text--grey"
-              onChange={setActiveSession}
+              onChange={e => {
+                setActiveSession(e.target.value);
+              }}
               value={activeSession}
             >
               <option value="DAYS">DAYS</option>
@@ -68,10 +76,22 @@ const App = () => {
           </div>
         </main>
         <div className="App__buttons">
-          <button className="App__text--white" data-amount="1" onClick={updateTime}>
+          <button
+            className="App__text--white"
+            data-amount="1"
+            onClick={e => {
+              updateTime(activeSession, e.target.dataset.amount);
+            }}
+          >
             INCREASE
           </button>
-          <button className="App__text--white" data-amount="-1" onClick={updateTime}>
+          <button
+            className="App__text--white"
+            data-amount="-1"
+            onClick={e => {
+              updateTime(activeSession, e.target.dataset.amount);
+            }}
+          >
             DECREASE
           </button>
         </div>
@@ -80,15 +100,14 @@ const App = () => {
   );
 };
 
-const setActiveSession = e => {
-  let activeSession = e.target.value;
-  store.dispatch(actions.setActiveSession(activeSession))
+const mapStateToProps = state => {
+  return state;
 };
+// const mapDispatchToProps = (setActiveSession, updateTime) => {
+//   return;
+// };
 
-const updateTime = e =>{
-
-  let activeSession = store.getState().activeSession;
-  let amount = e.target.dataset.amount;
-  store.dispatch(actions.updateTime(activeSession,amount));
-}
-export default App;
+export default connect(
+  mapStateToProps,
+  { setActiveSession, updateTime }
+)(App);
